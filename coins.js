@@ -8,6 +8,9 @@ var coinChange = async function(coins, amount) {
     let coinsSorted = coins.sort((a, b)=>(b-a));
     console.log('Coins:', coinsSorted, 'Amount:', amount);
     async function check(set, target) {
+        // reduce set to those less than target
+        set = set.filter((v)=>v<target);
+        console.log(`set:[${set}], target:${target}`);
         let checks = [];
         for(let i=0;i<set.length;i++) {
             let subset = [];
@@ -26,14 +29,14 @@ var coinChange = async function(coins, amount) {
                     console.log(`No more subset, dead end. div:${div}, rem:${rem}`);
                     checks.push(Promise.resolve(NaN));
                 } else {
-                    console.log(`Keep going. div:${div}, rem:${rem}, subset:${subset}`);
+                    console.log(`Keep going. div:${div}, rem:${rem}, subset:[${subset}]`);
                     checks.push(check(subset, rem).then((v)=>div+v));
                 }
             }
         }
         return Promise.all(checks).then((arr)=>{
             console.log(arr);
-            return arr.filter(Boolean).sort((a, b)=>(a-b))[0];
+            return arr.filter(Boolean).sort((a, b)=>(a-b))[0] || -1;
         });
     }
 
@@ -43,7 +46,7 @@ var coinChange = async function(coins, amount) {
 };
 
 var startTime = new Date();
-coinChange([1,5,10,25], 132).then((value)=>{
+coinChange([2], 3).then((value)=>{
     console.log((new Date())-startTime);
     console.log('Result: ', value);
 });
