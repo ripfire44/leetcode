@@ -1,20 +1,68 @@
-function resolveIn2Seconds(x) {
-    return new Promise(resolve=>{
-        console.log('resolving: ', x);
-        setTimeout(()=>{
-            resolve(x);
-        }, 2000);
-    });
-}
+// Matrix multiply
 
-async function runIt(){
-    let set = []
-    for(let i = 60;i>=0;i-=10) {
-        set.push(resolveIn2Seconds(i).then((v)=>10+v));
+const A = [186, 419, 83, 408].sort((a, b) => (b - a));
+const target = 6249;
+let x = [];
+let result;
+let answers = [];
+
+let max = 3000;
+do {
+    let check = NaN;
+    for (let i = x.length - 2; i >= 0; i--) {
+        check = isNaN(check)? x[i]:check+x[i];
+        if (x[i] > 0) {
+            x[i]--;
+            x.splice(i + 1);
+            break;
+        }
     }
-    return Promise.all(set);
+    if(check==0) {
+        console.log('Quitting');
+        break;
+    }
+    x = calcRem(A, target, x);
+    result = dot(A, x);
+    if (result == target) {
+        answers.push(x.slice());
+    }
+    console.log('quit:',quit, 'check:', check, 'x:', x, 'result:', result, 'target:', target, result == target ? 'HIT! coins:'+ x.reduce((a, v) => (a + v)) : '');
+    max--;
+
+} while (max > 0);
+
+if (max == 0) {
+    console.log('Max was reached!');
 }
 
-runIt().then((val)=>{
-    console.log(val);
-});
+console.log('answers:', answers);
+console.log('coins:', answers.map(x=>x.reduce((a,v)=>(a+v))));
+
+function calcRem(a, target, array) {
+    let rem = target;
+    array = array || [];
+    for (let i = 0; i < array.length; i++) {
+        rem -= array[i] * A[i];
+    }
+    for (let i = array.length; i < A.length; i++) {
+        array.push(Math.floor(rem / A[i]));
+        rem %= A[i];
+    }
+    return array;
+}
+
+function dot(a, b) {
+    let sum = 0;
+    for (let i = 0; i < a.length; i++) {
+        sum += a[i] * b[i];
+    }
+    return sum;
+}
+
+
+
+// console.log('Manual: ', sum);
+
+// const mathjs = require('mathjs');
+
+// console.log('Mathjs: ', mathjs.dot(A, x));
