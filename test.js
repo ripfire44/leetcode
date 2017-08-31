@@ -1,15 +1,28 @@
 // Matrix multiply
 
-const A = [186, 419, 83, 408].sort((a, b) => (b - a));
-const target = 6249;
+const A = [1,2,5].sort((a, b) => (b - a));
+const target = 10;
 let x = [];
 let result;
 let answers = [];
 
-let max = 3000;
+let max = 20;
 do {
-    let check = NaN;
-    for (let i = x.length - 2; i >= 0; i--) {
+    x = calcRem(A, target, x);
+    result = dot(A, x);
+    if (result == target) {
+        answers.push(x.slice());
+    }
+    console.log('x:', x, 'result:', result, 'target:', target, result == target ? 'HIT! coins:'+ x.reduce((a, v) => (a + v)) : '');
+    x.pop();
+    if(!x.length) {
+        break;
+    }
+    let check = x.reduce((a,v)=>(a+v));
+    if(!check) {
+        break;
+    }
+    for (let i = x.length - 1; i >= 0; i--) {
         check = isNaN(check)? x[i]:check+x[i];
         if (x[i] > 0) {
             x[i]--;
@@ -17,16 +30,6 @@ do {
             break;
         }
     }
-    if(check==0) {
-        console.log('Quitting');
-        break;
-    }
-    x = calcRem(A, target, x);
-    result = dot(A, x);
-    if (result == target) {
-        answers.push(x.slice());
-    }
-    console.log('quit:',quit, 'check:', check, 'x:', x, 'result:', result, 'target:', target, result == target ? 'HIT! coins:'+ x.reduce((a, v) => (a + v)) : '');
     max--;
 
 } while (max > 0);

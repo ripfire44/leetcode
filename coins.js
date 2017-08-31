@@ -10,17 +10,55 @@ var coinChange = function (coins, amount) {
     let x = [];
     let result;
     let answers = [];
-    let max = 3000; // just in case
+    let max = 5000000; // just in case
+
+    do {
+        x = calcRem(A, target, x);
+        result = dot(A, x);
+        if (result == target) {
+            let answer = x.reduce((a, v) => (a + v));
+            if (answers.indexOf(answer) === -1) {
+                answers.push(answer);
+            }
+        }
+        //console.log('x:', x, 'result:', result, 'target:', target, 'diff:', target - result, 'A:', A, result == target ? 'HIT! coins:' + x.reduce((a, v) => (a + v)) : '');
+        x.pop();
+        if (!x.length) {
+            break;
+        }
+        let check = x.reduce((a, v) => (a + v));
+        if (!check) {
+            break;
+        }
+        for (let i = x.length - 1; i >= 0; i--) {
+            if (x[i] > 0) {
+                x[i]--;
+                x.splice(i + 1);
+                break;
+            }
+        }
+        max--;
+
+    } while (max>0);
+    if (max == 0) {
+        console.log('hit max!');
+    }
+    console.log('answers:', answers);
+    if (!answers.length) {
+        return -1;
+    }
+    return answers.sort((a, b) => (a - b))[0];
+
 
     function calcRem(a, target, array) {
         let rem = target;
         array = array || [];
         for (let i = 0; i < array.length; i++) {
-            rem -= array[i] * A[i];
+            rem -= array[i] * a[i];
         }
-        for (let i = array.length; i < A.length; i++) {
-            array.push(Math.floor(rem / A[i]));
-            rem %= A[i];
+        for (let i = array.length; i < a.length; i++) {
+            array.push(Math.floor(rem / a[i]));
+            rem %= a[i];
         }
         return array;
     }
@@ -32,36 +70,11 @@ var coinChange = function (coins, amount) {
         }
         return sum;
     }
-
-    do {
-        let check = x.length? x.reduce((a,v)=>(a+v)) : NaN;
-        for (let i = x.length - 2; i >= 0; i--) {
-            check = isNaN(check) ? x[i] : check + x[i];
-            if (x[i] > 0) {
-                x[i]--;
-                x.splice(i + 1);
-                break;
-            }
-        }
-        if (check == 0) {
-            break;
-        }
-        x = calcRem(A, target, x);
-        result = dot(A, x);
-        if (result == target) {
-            answers.push(x.slice());
-        }
-        //console.log('x:', x, 'result:', result, 'target:', target, result == target ? 'HIT! coins:' + x.reduce((a, v) => (a + v)) : '');
-        max--;
-
-    } while (max > 0);
-    //console.log('answers:', answers);
-    let minCoins = answers.length? answers.map(x => x.reduce((a, v) => (a + v))).sort()[0] : -1;
-    //console.log('Min coins', minCoins);
-    return minCoins;
-
 };
 
 var startTime = new Date();
-console.log(`Result: ${coinChange([3], 2)}, Time: ${(new Date()) - startTime}`);
+
+
+
+console.log(`Result: ${coinChange([227, 99, 328, 299, 42, 322], 9847)}, Time: ${(new Date()) - startTime}`);
 
